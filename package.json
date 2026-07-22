@@ -1,0 +1,16 @@
+{
+  "name": "swiggy-recipe-cart",
+  "version": "1.0.0",
+  "description": "Paste a recipe, get its ingredients found and staged in an Instamart cart via Swiggy MCP.",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "open": "^11.0.0"
+  }
+}
