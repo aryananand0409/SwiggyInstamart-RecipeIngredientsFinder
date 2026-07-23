@@ -98,6 +98,7 @@ export default function App() {
 
   function handleReset() {
     setStep("recipe");
+    setRecipeText(EXAMPLE_RECIPE);
     setIngredients([]);
     setAddress(null);
     setProposedCart([]);
