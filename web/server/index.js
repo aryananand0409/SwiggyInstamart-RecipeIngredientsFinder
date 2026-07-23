@@ -80,6 +80,26 @@ app.post("/api/search", async (req, res) => {
   }
 });
 
+app.post("/api/confirm", async (req, res) => {
+  try {
+    if (!mcpClient) {
+      return res.status(400).json({ error: "Not connected to Swiggy yet — call /api/connect first." });
+    }
+    const { items, addressId } = req.body;
+    if (!Array.isArray(items) || !addressId) {
+      return res.status(400).json({ error: "items (array) and addressId (string) are required" });
+    }
+    await callTool(mcpClient, "update_cart", {
+      selectedAddressId: addressId,
+      items: items.map((i) => ({ spinId: i.spinId, skuId: i.skuId, quantity: 1 })),
+    });
+    const cart = await callTool(mcpClient, "get_cart");
+    res.json({ cart: cart.data ?? cart });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Web server listening on http://localhost:${PORT}`);
