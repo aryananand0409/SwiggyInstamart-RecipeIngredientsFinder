@@ -89,6 +89,9 @@ app.post("/api/confirm", async (req, res) => {
     if (!Array.isArray(items) || !addressId) {
       return res.status(400).json({ error: "items (array) and addressId (string) are required" });
     }
+    if (items.length === 0) {
+      return res.status(400).json({ error: "items must not be empty" });
+    }
     await callTool(mcpClient, "update_cart", {
       selectedAddressId: addressId,
       items: items.map((i) => ({ spinId: i.spinId, skuId: i.skuId, quantity: 1 })),

@@ -13,4 +13,4 @@ Requires the same `ANTHROPIC_API_KEY` env var as the CLI (`../README.md`).
 
 Open the client URL in a browser resized to ~400px wide (or use your browser's device toolbar) — the layout is mobile-first and designed to be shown at phone width during a screen-share.
 
-First Swiggy connection reuses the exact same OAuth flow as the CLI: a browser tab opens for login if there's no cached token in `.auth/` (shared with the CLI, ~5 day validity).
+First Swiggy connection reuses the exact same OAuth flow as the CLI: a browser tab opens for login if there's no cached token in `.auth/` (shared with the CLI, ~5 day validity). **For a live demo**, run through the full wizard once (or at least hit `/api/connect`) shortly beforehand to warm the OAuth token — this ensures the connect step stays fast and smooth, avoiding mid-demo browser login prompts or network delays.
