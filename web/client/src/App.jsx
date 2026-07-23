@@ -2,7 +2,8 @@ import { useState } from "react";
 import RecipeInput from "./steps/RecipeInput.jsx";
 import IngredientsReview from "./steps/IngredientsReview.jsx";
 import Loading from "./steps/Loading.jsx";
-import { extractIngredients, connectSwiggy, searchInstamart } from "./api.js";
+import ProposedCart from "./steps/ProposedCart.jsx";
+import { extractIngredients, connectSwiggy, searchInstamart, confirmCart } from "./api.js";
 
 const EXAMPLE_RECIPE = `Chana Masala
 
@@ -41,6 +42,7 @@ export default function App() {
   const [proposedCart, setProposedCart] = useState([]);
   const [skipped, setSkipped] = useState([]);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [finalCart, setFinalCart] = useState(null);
 
   const stepIndex = STEPS.indexOf(step);
 
@@ -76,6 +78,23 @@ export default function App() {
     }
   }
 
+  async function handleConfirm() {
+    setLoading(true);
+    setError(null);
+    try {
+      const cart = await confirmCart(
+        proposedCart.map((i) => ({ spinId: i.spinId, skuId: i.skuId })),
+        address.id
+      );
+      setFinalCart(cart);
+      setStep("done");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="phone-shell">
       <div className="dots">
@@ -91,6 +110,15 @@ export default function App() {
         <IngredientsReview ingredients={ingredients} onSubmit={handleSearch} />
       )}
       {step === "loading" && <Loading message={loadingMessage} />}
+      {step === "cart" && (
+        <ProposedCart
+          proposedCart={proposedCart}
+          skipped={skipped}
+          onSubmit={handleConfirm}
+          loading={loading}
+          address={address}
+        />
+      )}
     </div>
   );
 }
