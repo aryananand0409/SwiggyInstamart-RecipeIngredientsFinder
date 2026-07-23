@@ -1,6 +1,8 @@
 import { useState } from "react";
 import RecipeInput from "./steps/RecipeInput.jsx";
-import { extractIngredients } from "./api.js";
+import IngredientsReview from "./steps/IngredientsReview.jsx";
+import Loading from "./steps/Loading.jsx";
+import { extractIngredients, connectSwiggy, searchInstamart } from "./api.js";
 
 const EXAMPLE_RECIPE = `Chana Masala
 
@@ -35,6 +37,10 @@ export default function App() {
   const [ingredients, setIngredients] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [proposedCart, setProposedCart] = useState([]);
+  const [skipped, setSkipped] = useState([]);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const stepIndex = STEPS.indexOf(step);
 
@@ -52,6 +58,24 @@ export default function App() {
     }
   }
 
+  async function handleSearch() {
+    setStep("loading");
+    setError(null);
+    try {
+      setLoadingMessage("Connecting to Swiggy...");
+      const addr = await connectSwiggy();
+      setAddress(addr);
+      setLoadingMessage("Searching Instamart...");
+      const { proposedCart, skipped } = await searchInstamart(ingredients, addr.id);
+      setProposedCart(proposedCart);
+      setSkipped(skipped);
+      setStep("cart");
+    } catch (err) {
+      setError(err.message);
+      setStep("ingredients");
+    }
+  }
+
   return (
     <div className="phone-shell">
       <div className="dots">
@@ -64,11 +88,9 @@ export default function App() {
         <RecipeInput recipeText={recipeText} onChange={setRecipeText} onSubmit={handleExtract} loading={loading} />
       )}
       {step === "ingredients" && (
-        <div className="step-content">
-          <div className="title">Found {ingredients.length} ingredients</div>
-          <pre style={{ fontSize: 11, whiteSpace: "pre-wrap" }}>{JSON.stringify(ingredients, null, 2)}</pre>
-        </div>
+        <IngredientsReview ingredients={ingredients} onSubmit={handleSearch} />
       )}
+      {step === "loading" && <Loading message={loadingMessage} />}
     </div>
   );
 }
