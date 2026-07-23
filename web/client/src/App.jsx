@@ -3,6 +3,7 @@ import RecipeInput from "./steps/RecipeInput.jsx";
 import IngredientsReview from "./steps/IngredientsReview.jsx";
 import Loading from "./steps/Loading.jsx";
 import ProposedCart from "./steps/ProposedCart.jsx";
+import Done from "./steps/Done.jsx";
 import { extractIngredients, connectSwiggy, searchInstamart, confirmCart } from "./api.js";
 
 const EXAMPLE_RECIPE = `Chana Masala
@@ -95,6 +96,16 @@ export default function App() {
     }
   }
 
+  function handleReset() {
+    setStep("recipe");
+    setIngredients([]);
+    setAddress(null);
+    setProposedCart([]);
+    setSkipped([]);
+    setFinalCart(null);
+    setError(null);
+  }
+
   return (
     <div className="phone-shell">
       <div className="dots">
@@ -102,7 +113,14 @@ export default function App() {
           <span key={s} className={`dot ${i <= stepIndex ? "filled" : ""}`} />
         ))}
       </div>
-      {error && <div className="error-banner">{error}</div>}
+      {error && (
+        <div className="error-banner">
+          {error}
+          <button className="btn-primary" style={{ marginTop: 8 }} onClick={handleReset}>
+            Start Over
+          </button>
+        </div>
+      )}
       {step === "recipe" && (
         <RecipeInput recipeText={recipeText} onChange={setRecipeText} onSubmit={handleExtract} loading={loading} />
       )}
@@ -119,6 +137,7 @@ export default function App() {
           address={address}
         />
       )}
+      {step === "done" && <Done cart={finalCart} onReset={handleReset} />}
     </div>
   );
 }
