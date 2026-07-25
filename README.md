@@ -82,9 +82,10 @@ Only do this after you're confident the item-matching is reliable for your
 recipes — put a hard confirmation prompt in front of it, the same way the
 cart step has one now.
 
-## Next step: turning this into a web app
-Once this feels solid from the command line, the natural port is a small
-Express (or Next.js) app: same three modules (`auth.js`, `swiggyClient.js`,
-`ingredients.js`) reused as-is, with a form replacing the CLI prompts and the
-OAuth callback server becoming a real route instead of a temporary one. Say
-the word when you're ready and we'll do that migration.
+## Web GUI (demo)
+There's also a mobile-first web version of this exact flow — same
+recipe → ingredients → search → cart steps, driven from a browser instead of
+the terminal, built for demoing to the Swiggy Builders Club team. It reuses
+`src/auth.js`, `src/swiggyClient.js`, and `src/ingredients.js` as-is; nothing
+in `src/` changed to support it. See [`web/README.md`](web/README.md) for
+how to run it. This is a local single-user demo artifact, not a deployment.

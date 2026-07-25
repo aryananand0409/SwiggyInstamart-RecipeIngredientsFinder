@@ -16,7 +16,10 @@ src/
   auth.js           # OAuth 2.1 + PKCE provider (SwiggyOAuthProvider), token/client-info persistence
 recipes/
   example-brownies.txt   # Example recipe to test with
-.auth/              # Gitignored — cached OAuth tokens, client info, PKCE verifier (auto-created)
+web/
+  server/           # Express API wrapping src/*.js (4 endpoints, no duplicated logic) — see below
+  client/           # Vite + React mobile-first demo GUI — see below
+.auth/              # Gitignored — cached OAuth tokens, client info, PKCE verifier (auto-created), shared by CLI and web/server
 ```
 
 ## Running the Project
@@ -60,10 +63,24 @@ On first run, Swiggy login is triggered via browser OAuth (phone + OTP). Tokens 
 | `@modelcontextprotocol/sdk` | MCP client for Swiggy tool calls |
 | `open` | Opens browser for OAuth login |
 
+## Web GUI (demo)
+
+`web/` is a mobile-first demo GUI wrapping the same flow as `src/index.js`, built for showing the Swiggy Builders Club team — a local, single-user demo artifact, not a deployment. Full design/implementation history: `docs/superpowers/specs/2026-07-23-mobile-gui-design.md` and `docs/superpowers/plans/2026-07-24-mobile-gui.md`. Run instructions: [`web/README.md`](web/README.md).
+
+**`web/server/index.js`** — thin Express wrapper, four endpoints, each a straight call into the existing `src/*.js` modules (no reimplemented logic):
+- `POST /api/extract` → `extractIngredients()`
+- `POST /api/connect` → `connectSwiggy()` + `get_addresses`
+- `POST /api/search` → loops `search_products` per ingredient
+- `POST /api/confirm` → `update_cart` + `get_cart`
+
+Single module-level `mcpClient` — one connection for the whole server process, matching the CLI's single-session model. No auth/session isolation (fine for local single-user use, not multi-user-safe as-is).
+
+**`web/client/src/`** — Vite + React, one component per wizard step, matching `App.jsx`'s 5-step state machine (`recipe → ingredients → loading → cart → done`):
+`RecipeInput.jsx`, `IngredientsReview.jsx`, `Loading.jsx`, `ProposedCart.jsx`, `Done.jsx`, plus `api.js` (fetch wrappers) and `styles.css` (mobile-first, `#fc8019` Swiggy-orange accent, 400px content cap).
+
 ## Extending the Project
 
-- **Add checkout**: In `index.js`, after `get_cart`, call `callTool(client, "checkout", { paymentMethod: "COD" })` — but guard it with a hard confirmation prompt.
-- **Web app port**: `auth.js`, `swiggyClient.js`, and `ingredients.js` are self-contained modules. An Express/Next.js front-end can import them directly; the OAuth callback becomes a real route instead of a temp server.
+- **Add checkout**: In `src/index.js`, after `get_cart`, call `callTool(client, "checkout", { paymentMethod: "COD" })` — but guard it with a hard confirmation prompt. Same applies to `web/server/index.js`'s `/api/confirm` if extending the web flow.
 - **Other Swiggy verticals**: `SERVERS` in `swiggyClient.js` maps server names to MCP URLs. Add `/food` or `/dineout` entries there.
 
 ## Swiggy Builders Club
