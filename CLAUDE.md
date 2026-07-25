@@ -15,7 +15,7 @@ src/
   swiggyClient.js   # MCP client: connects to Swiggy, handles OAuth retry, wraps callTool()
   auth.js           # OAuth 2.1 + PKCE provider (SwiggyOAuthProvider), token/client-info persistence
 recipes/
-  example-chana-masala.txt   # Example recipe to test with
+  example-brownies.txt   # Example recipe to test with
 .auth/              # Gitignored — cached OAuth tokens, client info, PKCE verifier (auto-created)
 ```
 
@@ -24,7 +24,7 @@ recipes/
 ```bash
 npm install
 export ANTHROPIC_API_KEY=sk-ant-...
-npm start -- recipes/example-chana-masala.txt
+npm start -- recipes/example-brownies.txt
 ```
 
 On first run, Swiggy login is triggered via browser OAuth (phone + OTP). Tokens are cached in `.auth/` for ~5 days.

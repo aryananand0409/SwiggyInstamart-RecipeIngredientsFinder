@@ -46,7 +46,7 @@ dependency-light.)
 
 ### 4. Run it
 ```
-npm start -- recipes/example-chana-masala.txt
+npm start -- recipes/example-brownies.txt
 ```
 
 ### 5. First run: Swiggy login
